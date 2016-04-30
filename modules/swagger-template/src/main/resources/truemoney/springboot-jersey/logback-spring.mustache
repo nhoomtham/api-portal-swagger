@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+  <timestamp key="year" datePattern="yyyy" />
+  <timestamp key="month" datePattern="MM" />
+  <timestamp key="day" datePattern="dd" />
+
+  <springProperty scope="context" name="appname"
+    source="spring.application.name" />
+
+  <!-- Include default logback configuration -->
+  <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+
+  <property name="CONSOLE_LOG_PATTERN"
+    value="%clr(%d{dd/MM/yyyy HH:mm:ss.SSS Z}){magenta} | %clr(%5p) | %X{trans_id} | %clr(%15.15t){faint} | %13X{req.remoteHost} | %clr(%-40.40logger{39}){cyan} | %clr(${appname}){yellow} | %msg%n%wEx" />
+
+  <property name="FILE_LOG_PATTERN"
+    value="%d{dd/MM/yyyy HH:mm:ss.SSS Z} | %5p | %X{trans_id} | %15.15t | %13X{req.remoteHost} | %-40.40logger | ${appname} | %msg%n%wEx" />
+
+  <property name="LOG_PATH" value="/data/logs/${appname}" />
+
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+      <charset>utf8</charset>
+    </encoder>
+  </appender>
+
+  <appender name="dailyRollingFileAppender"
+    class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <File>${LOG_PATH}/application.log</File>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- daily rollover -->
+      <fileNamePattern>${LOG_PATH}/application.%d{yyyy-MM-dd}.log
+      </fileNamePattern>
+
+      <!-- keep 90 days' worth of history -->
+      <maxHistory>90</maxHistory>
+    </rollingPolicy>
+
+    <encoder>
+      <charset>utf-8</charset>
+      <pattern>${FILE_LOG_PATTERN}</pattern>
+    </encoder>
+  </appender>
+
+  <springProfile name="default, dev">
+    <root level="DEBUG">
+      <appender-ref ref="CONSOLE" />
+    </root>
+  </springProfile>
+  <springProfile name="alpha, staging, prod">
+    <root>
+      <level value="INFO" />
+      <appender-ref ref="dailyRollingFileAppender" />
+    </root>
+    <logger name="org.springframework" level="WARN" />
+    <logger name="org.springframework.web" level="WARN" />
+    <logger name="org.springframework.security" level="WARN" />
+    <logger name="org.springframework.cache" level="WARN" />
+    <logger name="org.hibernate" level="WARN" />
+    <logger name="io.swagger" level="WARN" />
+  </springProfile>
+</configuration>

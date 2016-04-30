@@ -1,0 +1,32 @@
+package {{invokerPackage}}.config;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+import java.util.TimeZone;
+
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Provider;
+
+@Provider
+public class ObjectMapperContextResolver implements ContextResolver<ObjectMapper> {
+
+  private final ObjectMapper mapper;
+
+  public ObjectMapperContextResolver() {
+    mapper = new ObjectMapper();
+    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.US);
+    mapper.setLocale(Locale.US);
+    mapper.setTimeZone(TimeZone.getTimeZone("Asia/Bangkok"));
+    mapper.setDateFormat(dateFormat);
+    mapper.configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, false);
+  }
+
+  @Override
+  public ObjectMapper getContext(Class<?> type) {
+    return mapper;
+  }
+
+}

@@ -1,0 +1,23 @@
+package {{invokerPackage}}.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import io.swagger.jaxrs.config.BeanConfig;
+
+@Configuration
+public class SwaggerConfig {
+
+    @Bean
+    public BeanConfig config() {
+        BeanConfig beanConfig = new BeanConfig();
+        beanConfig.setVersion("{{appVersion}}");
+        beanConfig.setSchemes(new String[] { "{{scheme}}" });
+        beanConfig.setHost("{{host}}");
+        beanConfig.setBasePath("{{contextPath}}");
+        beanConfig.setResourcePackage("{{apiPackage}}");
+        beanConfig.setScan(true);
+        return beanConfig;
+    }
+
+}
